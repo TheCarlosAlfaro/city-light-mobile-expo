@@ -4,8 +4,11 @@ import * as AuthSession from 'expo-auth-session';
 import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { scopes } from './pco';
 import LoginScreen from './components/LoginScreen';
+import ScreenContext from './ScreenContext';
 
 import {
 	AUTH_ENDPOINT,
@@ -17,6 +20,51 @@ import {
 
 const redirectUrl = AuthSession.getRedirectUrl();
 const Stack = createStackNavigator();
+
+const GiveScreen = () => {
+	return (
+		<View style={styles.container}>
+			<View style={styles.userInfo}>
+				<Text style={styles.placeHolder}>
+					This is supposed to be the Give Screen
+				</Text>
+			</View>
+		</View>
+	);
+};
+const GroupsScreen = () => {
+	return (
+		<View style={styles.container}>
+			<View style={styles.userInfo}>
+				<Text style={styles.placeHolder}>
+					This is supposed to be the GROUP Screen
+				</Text>
+			</View>
+		</View>
+	);
+};
+const CheckinScreen = () => {
+	return (
+		<View style={styles.container}>
+			<View style={styles.userInfo}>
+				<Text style={styles.placeHolder}>
+					This is supposed to be the CHECK-IN Screen
+				</Text>
+			</View>
+		</View>
+	);
+};
+const EventsScreen = () => {
+	return (
+		<View style={styles.container}>
+			<View style={styles.userInfo}>
+				<Text style={styles.placeHolder}>
+					This is supposed to be the EVENTS Screen
+				</Text>
+			</View>
+		</View>
+	);
+};
 
 export default function App() {
 	const [code, setCode] = useState(null);
@@ -92,16 +140,8 @@ export default function App() {
 			</View>
 		);
 	};
-	giveScreen = () => {
-		return (
-			<View style={styles.userInfo}>
-				<Text style={styles.errorText}>
-					This is supposed to be the Give Screen
-				</Text>
-			</View>
-		);
-	};
 
+	const Tab = createBottomTabNavigator();
 	homeScreen = () => {
 		{
 			return userInfo ? (
@@ -135,24 +175,44 @@ export default function App() {
 	};
 
 	return (
-		<NavigationContainer>
-			<Stack.Navigator>
+		<ScreenContext.Provider>
+			<NavigationContainer>
 				{userInfo ? (
-					<Stack.Screen
-						name='Home'
-						component={homeScreen}
-						options={{ title: 'Welcome Home' }}
-					/>
+					<Tab.Navigator>
+						<Tab.Screen
+							userInfo={userInfo}
+							name='Home'
+							component={homeScreen}
+							options={{ title: 'Home' }}
+						/>
+						<Tab.Screen
+							name='Give'
+							component={GiveScreen}
+							options={{ title: 'Give' }}
+						/>
+						<Tab.Screen
+							name='Groups'
+							component={GroupsScreen}
+							options={{ title: 'Groups' }}
+						/>
+						<Tab.Screen
+							name='Check-In'
+							component={CheckinScreen}
+							options={{ title: 'Check-In' }}
+						/>
+						<Tab.Screen
+							name='Events'
+							component={EventsScreen}
+							options={{ title: 'Events' }}
+						/>
+					</Tab.Navigator>
 				) : (
-					<Stack.Screen name='Login' component={LoginScreen} />
+					<Stack.Navigator>
+						<Stack.Screen name='Login' component={LoginScreen} />
+					</Stack.Navigator>
 				)}
-				<Stack.Screen
-					name='Give'
-					component={giveScreen}
-					options={{ title: 'Your Generosity' }}
-				/>
-			</Stack.Navigator>
-		</NavigationContainer>
+			</NavigationContainer>
+		</ScreenContext.Provider>
 	);
 }
 
@@ -196,5 +256,8 @@ const styles = StyleSheet.create({
 		height: 200,
 		width: 200,
 		marginBottom: 32,
+	},
+	placeHolder: {
+		fontSize: 40,
 	},
 });
