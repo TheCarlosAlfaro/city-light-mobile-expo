@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
 
-export default LoginScreen = ({ userInfo }) => {
+export default LoginScreen = () => {
 	return (
 		<View style={styles.container}>
 			<Image
@@ -11,12 +11,11 @@ export default LoginScreen = ({ userInfo }) => {
 			/>
 			<TouchableOpacity
 				style={styles.button}
-				onPress={handleSpotifyLogin}
-				disabled={userInfo ? true : false}>
+				onPress={handlePCOLogin}
+				// disabled={userInfo ? true : false}
+			>
 				<Text style={styles.buttonText}>Login with PCO</Text>
 			</TouchableOpacity>
-
-			{/* {didError ? displayError() : homeScreen()} */}
 		</View>
 	);
 };

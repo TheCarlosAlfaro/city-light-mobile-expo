@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
 import * as AuthSession from 'expo-auth-session';
 import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,13 +6,20 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { scopes } from './pco';
-import LoginScreen from './components/LoginScreen';
-import ScreenContext from './ScreenContext';
+import LoginScreen from './screens/LoginScreen';
+import HomeScreen from './screens/HomeScreen';
+import GiveScreen from './screens/GiveScreen';
+import GroupsScreen from './screens/GroupsScreen';
+import CheckinScreen from './screens/CheckinScreen';
+import EventsScreen from './screens/EventsScreen';
+
+import { UserInfoProvider, UserInfoContext } from './UserInfoContext';
 
 import {
 	AUTH_ENDPOINT,
 	ACCESS_TOKEN_ENDPOINT,
-	API_ENDPOINT,
+	API_ME,
+	API_GENERAL,
 	CLIENT_ID,
 	CLIENT_SECRET,
 } from '@env';
@@ -21,55 +27,12 @@ import {
 const redirectUrl = AuthSession.getRedirectUrl();
 const Stack = createStackNavigator();
 
-const GiveScreen = () => {
-	return (
-		<View style={styles.container}>
-			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					This is supposed to be the Give Screen
-				</Text>
-			</View>
-		</View>
-	);
-};
-const GroupsScreen = () => {
-	return (
-		<View style={styles.container}>
-			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					This is supposed to be the GROUP Screen
-				</Text>
-			</View>
-		</View>
-	);
-};
-const CheckinScreen = () => {
-	return (
-		<View style={styles.container}>
-			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					This is supposed to be the CHECK-IN Screen
-				</Text>
-			</View>
-		</View>
-	);
-};
-const EventsScreen = () => {
-	return (
-		<View style={styles.container}>
-			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					This is supposed to be the EVENTS Screen
-				</Text>
-			</View>
-		</View>
-	);
-};
-
 export default function App() {
 	const [code, setCode] = useState(null);
 	const [accessToken, setAccessToken] = useState(null);
 	const [userInfo, setUserInfo] = useState(null);
+	// const [userInfo, setUserInfo] = useState(useContext(UserInfoContext));
+	const [churchInfo, setChurchInfo] = useState(null);
 	const [didError, setError] = useState(false);
 
 	useEffect(() => {
@@ -96,26 +59,38 @@ export default function App() {
 				getAccessToken();
 			}
 
-			if (!accessToken) {
-				setError(false);
-				setUserInfo(null);
-			} else {
+			if (accessToken) {
 				const handleGetData = async () => {
-					const response = await axios.get(API_ENDPOINT, {
-						headers: {
-							authorization: `Bearer ${accessToken}`,
-						},
-					});
-					setUserInfo(response.data);
+					const response = await axios
+						.get(API_ME, {
+							headers: {
+								authorization: `Bearer ${accessToken}`,
+							},
+						})
+						.then((response) => {
+							setUserInfo(response.data);
+						})
+						.then(async () => {
+							const generalInfo = await axios
+								.get(API_GENERAL, {
+									headers: {
+										authorization: `Bearer ${accessToken}`,
+									},
+								})
+								.then((response) =>
+									setChurchInfo(response.data)
+								);
+						});
 				};
+
 				if (!userInfo) {
 					handleGetData();
 				}
 			}
 		}
-	}, [code, accessToken, userInfo, didError]);
+	}, [code, accessToken, userInfo, didError, churchInfo, setUserInfo]);
 
-	handleSpotifyLogin = async () => {
+	handlePCOLogin = async () => {
 		let results = await AuthSession.startAsync({
 			authUrl: `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${redirectUrl}&response_type=code&scope=${scopes.join(
 				'%20'
@@ -131,58 +106,16 @@ export default function App() {
 		setUserInfo(null);
 	};
 
-	displayError = () => {
-		return (
-			<View style={styles.userInfo}>
-				<Text style={styles.errorText}>
-					There was an error, please try again.
-				</Text>
-			</View>
-		);
-	};
-
 	const Tab = createBottomTabNavigator();
-	homeScreen = () => {
-		{
-			return userInfo ? (
-				<View style={styles.container}>
-					<View style={styles.userInfo}>
-						<Image
-							style={styles.profileImage}
-							source={{ uri: userInfo.data.attributes.avatar }}
-						/>
-						<View>
-							<Text style={styles.userInfoText}>First Name:</Text>
-							<Text style={styles.userInfoText}>
-								{userInfo.data.attributes.first_name}
-							</Text>
-							<Text style={styles.userInfoText}>Last Name:</Text>
-							<Text style={styles.userInfoText}>
-								{userInfo.data.attributes.last_name}
-							</Text>
-						</View>
-						<TouchableOpacity
-							style={styles.button}
-							onPress={handlePCOLogout}>
-							<Text style={styles.buttonText}>Log Out</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			) : (
-				<LoginScreen />
-			);
-		}
-	};
 
 	return (
-		<ScreenContext.Provider>
-			<NavigationContainer>
-				{userInfo ? (
+		<NavigationContainer>
+			{userInfo ? (
+				<UserInfoProvider>
 					<Tab.Navigator>
 						<Tab.Screen
-							userInfo={userInfo}
 							name='Home'
-							component={homeScreen}
+							component={HomeScreen}
 							options={{ title: 'Home' }}
 						/>
 						<Tab.Screen
@@ -206,58 +139,12 @@ export default function App() {
 							options={{ title: 'Events' }}
 						/>
 					</Tab.Navigator>
-				) : (
-					<Stack.Navigator>
-						<Stack.Screen name='Login' component={LoginScreen} />
-					</Stack.Navigator>
-				)}
-			</NavigationContainer>
-		</ScreenContext.Provider>
+				</UserInfoProvider>
+			) : (
+				<Stack.Navigator>
+					<Stack.Screen name='Login' component={LoginScreen} />
+				</Stack.Navigator>
+			)}
+		</NavigationContainer>
 	);
 }
-
-const styles = StyleSheet.create({
-	logo: {
-		maxWidth: 400,
-		height: 300,
-		marginTop: 20,
-		marginBottom: 20,
-	},
-	container: {
-		flexDirection: 'column',
-		backgroundColor: '#fff',
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	button: {
-		backgroundColor: '#000',
-		padding: 20,
-		marginBottom: 20,
-	},
-	buttonText: {
-		color: '#fff',
-		fontSize: 20,
-	},
-	userInfo: {
-		height: 440,
-		width: 310,
-		alignItems: 'center',
-	},
-	userInfoText: {
-		color: '#000',
-		fontSize: 22,
-	},
-	errorText: {
-		color: '#000',
-		fontSize: 18,
-	},
-	profileImage: {
-		height: 200,
-		width: 200,
-		marginBottom: 32,
-	},
-	placeHolder: {
-		fontSize: 40,
-	},
-});
