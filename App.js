@@ -13,7 +13,7 @@ import GroupsScreen from './screens/GroupsScreen';
 import CheckinScreen from './screens/CheckinScreen';
 import EventsScreen from './screens/EventsScreen';
 
-import UserInfoContext from './UserInfoContext';
+import UserInfoContext from './context/UserInfoContext';
 
 import {
 	AUTH_ENDPOINT,
@@ -33,6 +33,12 @@ export default function App() {
 	const [userInfo, setUserInfo] = useState(null);
 	const [churchInfo, setChurchInfo] = useState(null);
 	const [didError, setError] = useState(false);
+
+	const pcoData = {
+		userInfo,
+		churchInfo,
+		accessToken,
+	};
 
 	useEffect(() => {
 		if (!code) {
@@ -60,12 +66,12 @@ export default function App() {
 
 			if (accessToken) {
 				const handleGetData = async () => {
-					const response = await axios.get(API_ME, {
+					const personal = await axios.get(API_ME, {
 						headers: {
 							authorization: `Bearer ${accessToken}`,
 						},
 					});
-					setUserInfo(response.data);
+					setUserInfo(personal.data);
 
 					const generalInfo = await axios.get(API_GENERAL, {
 						headers: {
@@ -81,7 +87,15 @@ export default function App() {
 				}
 			}
 		}
-	}, [code, accessToken, userInfo, didError, churchInfo, setUserInfo]);
+	}, [
+		code,
+		accessToken,
+		userInfo,
+		didError,
+		churchInfo,
+		setUserInfo,
+		pcoData,
+	]);
 
 	handlePCOLogin = async () => {
 		let results = await AuthSession.startAsync({
@@ -102,9 +116,9 @@ export default function App() {
 	const Tab = createBottomTabNavigator();
 
 	return (
-		<UserInfoContext.Provider value={userInfo}>
+		<UserInfoContext.Provider value={pcoData}>
 			<NavigationContainer>
-				{userInfo ? (
+				{pcoData.userInfo && pcoData.churchInfo ? (
 					<Tab.Navigator>
 						<Tab.Screen
 							name='Home'

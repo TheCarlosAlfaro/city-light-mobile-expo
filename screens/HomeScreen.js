@@ -1,82 +1,92 @@
-import React, { useContext } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
-import UserInfoContext from '../UserInfoContext';
+import React, { useContext, useState, useEffect } from 'react';
+import {
+	TouchableOpacity,
+	StyleSheet,
+	Text,
+	View,
+	Image,
+	SafeAreaView,
+} from 'react-native';
+import UserInfoContext from '../context/UserInfoContext';
+import { ScrollView } from 'react-native-gesture-handler';
+import Constants from 'expo-constants';
+import axios from 'axios';
+import { API_GENERAL } from '@env';
 
 export default HomeScreen = () => {
-	const userInfo = useContext(UserInfoContext);
+	const pcoData = useContext(UserInfoContext);
+	const userPrimaryCampus = pcoData.userInfo.data.links.primary_campus;
+	const [campuses, setCampuses] = useState([]);
+
+	useEffect(() => {
+		const getCampuses = async () => {
+			const response = await axios.get(`${API_GENERAL}campuses`, {
+				headers: {
+					authorization: `Bearer ${pcoData.accessToken}`,
+				},
+			});
+
+			setCampuses([...response.data.data]);
+		};
+
+		if (campuses.length < 1) {
+			getCampuses();
+		}
+	}, [campuses]);
+
 	return (
-		<View style={styles.container}>
-			<View style={styles.userInfo}>
-				<Image
-					style={styles.profileImage}
-					source={{ uri: userInfo.data.attributes.avatar }}
-				/>
-				{/* <Image
-					style={styles.profileImage}
-					source={{
-						uri: churchInfo.data.attributes.avatar_url,
-					}}
-				/> */}
-				<View>
-					<Text style={styles.userInfoText}>First Name:</Text>
-					<Text style={styles.userInfoText}>
-						{console.log('from HOME', userInfo)}
-						{userInfo.data.attributes.first_name}
-					</Text>
-					<Text style={styles.userInfoText}>Last Name:</Text>
-					<Text style={styles.userInfoText}>
-						{userInfo.data.attributes.last_name}
-					</Text>
+		<SafeAreaView style={styles.container}>
+			<ScrollView style={styles.scrollView}>
+				<View style={styles.header}>
+					<Image
+						source={{
+							uri: pcoData.churchInfo.data.attributes.avatar_url,
+						}}
+						style={{ width: 200, height: 100 }}
+					/>
 				</View>
-				<TouchableOpacity
-					style={styles.button}
-					onPress={handlePCOLogout}>
-					<Text style={styles.buttonText}>Log Out</Text>
-				</TouchableOpacity>
-			</View>
-		</View>
+				<View>
+					{console.log('from home', campuses[0])}
+					<Text style={styles.campus}>
+						{userPrimaryCampus
+							? userPrimaryCampus
+							: campuses[0].attributes.name}
+					</Text>
+					<View style={styles.contactInfo}>
+						<Text>Some text here</Text>
+					</View>
+				</View>
+			</ScrollView>
+		</SafeAreaView>
 	);
 };
 
 const styles = StyleSheet.create({
-	logo: {
-		maxWidth: 400,
-		height: 300,
-		marginTop: 20,
-		marginBottom: 20,
-	},
 	container: {
-		flexDirection: 'column',
-		backgroundColor: '#fff',
 		flex: 1,
-		alignItems: 'center',
+
+		backgroundColor: 'blue',
+	},
+	scrollView: {
+		backgroundColor: 'yellow',
+		marginHorizontal: 10,
+	},
+	header: {
+		flex: 1,
 		justifyContent: 'center',
-	},
-	button: {
-		backgroundColor: '#000',
-		padding: 20,
-		marginBottom: 20,
-	},
-	buttonText: {
-		color: '#fff',
-		fontSize: 20,
-	},
-	userInfo: {
-		height: 240,
-		width: 210,
+		backgroundColor: 'pink',
 		alignItems: 'center',
+		resizeMode: 'contain',
+		paddingTop: Constants.statusBarHeight,
+		paddingBottom: Constants.statusBarHeight,
 	},
-	userInfoText: {
-		color: '#000',
-		fontSize: 18,
+	campus: {
+		padding: 20,
+		fontSize: 24,
 	},
-	errorText: {
-		color: '#000',
-		fontSize: 18,
-	},
-	profileImage: {
-		height: 64,
-		width: 64,
-		marginBottom: 32,
+	contactInfo: {
+		borderTopWidth: 0.5,
+		borderBottomWidth: 0.5,
+		padding: 15,
 	},
 });
