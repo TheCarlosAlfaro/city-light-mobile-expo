@@ -13,7 +13,7 @@ import GroupsScreen from './screens/GroupsScreen';
 import CheckinScreen from './screens/CheckinScreen';
 import EventsScreen from './screens/EventsScreen';
 
-import { UserInfoProvider, UserInfoContext } from './UserInfoContext';
+import UserInfoContext from './UserInfoContext';
 
 import {
 	AUTH_ENDPOINT,
@@ -31,7 +31,6 @@ export default function App() {
 	const [code, setCode] = useState(null);
 	const [accessToken, setAccessToken] = useState(null);
 	const [userInfo, setUserInfo] = useState(null);
-	// const [userInfo, setUserInfo] = useState(useContext(UserInfoContext));
 	const [churchInfo, setChurchInfo] = useState(null);
 	const [didError, setError] = useState(false);
 
@@ -61,26 +60,20 @@ export default function App() {
 
 			if (accessToken) {
 				const handleGetData = async () => {
-					const response = await axios
-						.get(API_ME, {
-							headers: {
-								authorization: `Bearer ${accessToken}`,
-							},
-						})
-						.then((response) => {
-							setUserInfo(response.data);
-						})
-						.then(async () => {
-							const generalInfo = await axios
-								.get(API_GENERAL, {
-									headers: {
-										authorization: `Bearer ${accessToken}`,
-									},
-								})
-								.then((response) =>
-									setChurchInfo(response.data)
-								);
-						});
+					const response = await axios.get(API_ME, {
+						headers: {
+							authorization: `Bearer ${accessToken}`,
+						},
+					});
+					setUserInfo(response.data);
+
+					const generalInfo = await axios.get(API_GENERAL, {
+						headers: {
+							authorization: `Bearer ${accessToken}`,
+						},
+					});
+
+					setChurchInfo(generalInfo.data);
 				};
 
 				if (!userInfo) {
@@ -109,9 +102,9 @@ export default function App() {
 	const Tab = createBottomTabNavigator();
 
 	return (
-		<NavigationContainer>
-			{userInfo ? (
-				<UserInfoProvider>
+		<UserInfoContext.Provider value={userInfo}>
+			<NavigationContainer>
+				{userInfo ? (
 					<Tab.Navigator>
 						<Tab.Screen
 							name='Home'
@@ -139,12 +132,12 @@ export default function App() {
 							options={{ title: 'Events' }}
 						/>
 					</Tab.Navigator>
-				</UserInfoProvider>
-			) : (
-				<Stack.Navigator>
-					<Stack.Screen name='Login' component={LoginScreen} />
-				</Stack.Navigator>
-			)}
-		</NavigationContainer>
+				) : (
+					<Stack.Navigator>
+						<Stack.Screen name='Login' component={LoginScreen} />
+					</Stack.Navigator>
+				)}
+			</NavigationContainer>
+		</UserInfoContext.Provider>
 	);
 }

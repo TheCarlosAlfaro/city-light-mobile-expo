@@ -1,18 +1,17 @@
 import React, { useContext } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
-import { UserInfoContext } from '../UserInfoContext';
+import UserInfoContext from '../UserInfoContext';
 
 export default HomeScreen = () => {
-	// const [userInfo, setUserInfo] = useContext(UserInfoContext);
-
+	const userInfo = useContext(UserInfoContext);
 	return (
 		<View style={styles.container}>
 			<View style={styles.userInfo}>
-				{/* <Image
+				<Image
 					style={styles.profileImage}
 					source={{ uri: userInfo.data.attributes.avatar }}
 				/>
-				<Image
+				{/* <Image
 					style={styles.profileImage}
 					source={{
 						uri: churchInfo.data.attributes.avatar_url,
@@ -21,12 +20,12 @@ export default HomeScreen = () => {
 				<View>
 					<Text style={styles.userInfoText}>First Name:</Text>
 					<Text style={styles.userInfoText}>
-						{/* {console.log('from HOME', userInfo)} */}
+						{console.log('from HOME', userInfo)}
+						{userInfo.data.attributes.first_name}
 					</Text>
 					<Text style={styles.userInfoText}>Last Name:</Text>
 					<Text style={styles.userInfoText}>
-						{/* {userInfo.data.attributes.last_name} */}
-						bye
+						{userInfo.data.attributes.last_name}
 					</Text>
 				</View>
 				<TouchableOpacity
