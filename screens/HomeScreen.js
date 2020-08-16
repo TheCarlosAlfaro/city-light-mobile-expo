@@ -6,6 +6,8 @@ import {
 	View,
 	Image,
 	SafeAreaView,
+	Button,
+	Dimensions,
 } from 'react-native';
 import UserInfoContext from '../context/UserInfoContext';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -15,6 +17,7 @@ import axios from 'axios';
 import { API_GENERAL } from '@env';
 
 import { MaterialIcons } from '@expo/vector-icons';
+import MapView, { Marker } from 'react-native-maps';
 
 class Anchor extends React.Component {
 	_handlePress = () => {
@@ -65,6 +68,9 @@ export default HomeScreen = () => {
 				{campus && (
 					<View>
 						<Text style={styles.campus}>{campus.name}</Text>
+						<Text style={styles.welcomeMessage}>
+							Welcome {pcoData.userInfo.data.attributes.name}!
+						</Text>
 						<View style={styles.contactInfo}>
 							<View style={styles.contactItem}>
 								<MaterialIcons
@@ -106,6 +112,42 @@ export default HomeScreen = () => {
 								</Anchor>
 							</View>
 						</View>
+						<View style={styles.serviceTimesContainer}>
+							<Text style={styles.sectionTitle}>
+								Service Times
+							</Text>
+							<Text style={styles.serviceDay}>Sunday</Text>
+							<Text>9:30 AM, 11:30 AM</Text>
+						</View>
+						<View style={styles.location}>
+							<Text style={styles.sectionTitle}>Location</Text>
+							<Button title='Directions'></Button>
+						</View>
+						<MapView
+							style={styles.mapStyle}
+							initialRegion={{
+								latitude: 36.0544542,
+								longitude: -115.2825083,
+								latitudeDelta: 0.02,
+								longitudeDelta: 0.02,
+							}}>
+							<Marker
+								coordinate={{
+									latitude: 36.0544542,
+									longitude: -115.2825083,
+								}}
+							/>
+						</MapView>
+						<Anchor
+							style={styles.address}
+							href={
+								pcoData.churchInfo.data.attributes
+									.contact_website
+							}>
+							{`${campus.street}${'\n'}`}
+
+							{`${campus.city}, ${campus.state} ${campus.zip}`}
+						</Anchor>
 					</View>
 				)}
 			</ScrollView>
@@ -133,8 +175,15 @@ const styles = StyleSheet.create({
 		paddingBottom: Constants.statusBarHeight,
 	},
 	campus: {
-		padding: 20,
+		fontWeight: 'bold',
+		marginVertical: 5,
 		fontSize: 24,
+		alignSelf: 'center',
+	},
+	welcomeMessage: {
+		fontSize: 16,
+		marginVertical: 5,
+		alignSelf: 'center',
 	},
 	contactInfo: {
 		borderTopWidth: 0.5,
@@ -149,5 +198,33 @@ const styles = StyleSheet.create({
 	},
 	contactLink: {
 		marginStart: 5,
+	},
+	serviceTimesContainer: {
+		backgroundColor: 'red',
+		paddingVertical: 20,
+	},
+	sectionTitle: {
+		fontWeight: 'bold',
+		fontSize: 24,
+		paddingVertical: 5,
+	},
+	serviceDay: {
+		fontWeight: 'bold',
+		fontSize: 18,
+		paddingVertical: 5,
+	},
+	location: {
+		backgroundColor: 'pink',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	mapStyle: {
+		width: Dimensions.get('window').width - 20,
+		height: 200,
+	},
+	address: {
+		fontSize: 18,
+		paddingVertical: 20,
 	},
 });

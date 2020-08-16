@@ -149,14 +149,14 @@ export default function App() {
 								return (
 									<Ionicons
 										name={iconName}
-										size={size}
+										size={28}
 										color={color}
 									/>
 								);
 							},
 						})}
 						tabBarOptions={{
-							activeTintColor: 'tomato',
+							activeTintColor: '#000',
 							inactiveTintColor: 'gray',
 						}}>
 						<Tab.Screen
