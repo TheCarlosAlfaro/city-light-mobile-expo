@@ -179,7 +179,14 @@ export default function HomeStackScreen() {
 	}, [campus]);
 
 	return (
-		<HomeStack.Navigator>
+		<HomeStack.Navigator
+			screenOptions={{
+				title: false,
+				headerStyle: {
+					backgroundColor: '#fff',
+					shadowColor: '#fff',
+				},
+			}}>
 			<HomeStack.Screen
 				name='Home'
 				component={HomeScreen}
@@ -193,8 +200,8 @@ export default function HomeStackScreen() {
 										pcoData.userInfo.data.attributes.avatar,
 								}}
 								style={{
-									width: 40,
-									height: 40,
+									width: 30,
+									height: 30,
 									borderRadius: 100,
 									marginHorizontal: 20,
 								}}
@@ -223,7 +230,6 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		alignItems: 'center',
 		resizeMode: 'contain',
-		paddingTop: Constants.statusBarHeight,
 		paddingBottom: Constants.statusBarHeight,
 	},
 	campus: {
