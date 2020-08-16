@@ -4,6 +4,7 @@ import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
 import { scopes } from './pco';
 import LoginScreen from './screens/LoginScreen';
@@ -119,7 +120,45 @@ export default function App() {
 		<UserInfoContext.Provider value={pcoData}>
 			<NavigationContainer>
 				{pcoData.userInfo && pcoData.churchInfo ? (
-					<Tab.Navigator>
+					<Tab.Navigator
+						screenOptions={({ route }) => ({
+							tabBarIcon: ({ focused, color, size }) => {
+								let iconName;
+
+								if (route.name === 'Home') {
+									iconName = focused ? 'md-home' : 'md-home';
+								} else if (route.name === 'Give') {
+									iconName = focused
+										? 'ios-heart'
+										: 'ios-heart-empty';
+								} else if (route.name === 'Groups') {
+									iconName = focused
+										? 'ios-people'
+										: 'md-people';
+								} else if (route.name === 'Check-In') {
+									iconName = focused
+										? 'md-checkmark-circle'
+										: 'ios-checkmark-circle-outline';
+								} else if (route.name === 'Events') {
+									iconName = focused
+										? 'md-calendar'
+										: 'ios-calendar';
+								}
+
+								// You can return any component that you like here!
+								return (
+									<Ionicons
+										name={iconName}
+										size={size}
+										color={color}
+									/>
+								);
+							},
+						})}
+						tabBarOptions={{
+							activeTintColor: 'tomato',
+							inactiveTintColor: 'gray',
+						}}>
 						<Tab.Screen
 							name='Home'
 							component={HomeScreen}
