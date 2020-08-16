@@ -159,16 +159,16 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 
-		backgroundColor: 'blue',
+		backgroundColor: '#fff',
 	},
 	scrollView: {
-		backgroundColor: 'yellow',
+		backgroundColor: '#fff',
 		marginHorizontal: 10,
 	},
 	header: {
 		flex: 1,
 		justifyContent: 'center',
-		backgroundColor: 'pink',
+		backgroundColor: '#fff',
 		alignItems: 'center',
 		resizeMode: 'contain',
 		paddingTop: Constants.statusBarHeight,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
 		marginStart: 5,
 	},
 	serviceTimesContainer: {
-		backgroundColor: 'red',
+		backgroundColor: '#fff',
 		paddingVertical: 20,
 	},
 	sectionTitle: {
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 5,
 	},
 	location: {
-		backgroundColor: 'pink',
+		backgroundColor: '#fff',
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
