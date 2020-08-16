@@ -15,9 +15,12 @@ import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import axios from 'axios';
 import { API_GENERAL } from '@env';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import { MaterialIcons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
+
+const HomeStack = createStackNavigator();
 
 class Anchor extends React.Component {
 	_handlePress = () => {
@@ -34,7 +37,7 @@ class Anchor extends React.Component {
 	}
 }
 
-export default HomeScreen = () => {
+const HomeScreen = () => {
 	const pcoData = useContext(UserInfoContext);
 	const [campus, setCampus] = useState(null);
 
@@ -154,6 +157,55 @@ export default HomeScreen = () => {
 		</SafeAreaView>
 	);
 };
+
+export default function HomeStackScreen() {
+	const pcoData = useContext(UserInfoContext);
+	const [campus, setCampus] = useState(null);
+
+	useEffect(() => {
+		const getCampus = async () => {
+			const response = await axios.get(`${API_GENERAL}campuses`, {
+				headers: {
+					authorization: `Bearer ${pcoData.accessToken}`,
+				},
+			});
+
+			setCampus(response.data.data[0].attributes);
+		};
+
+		if (!campus) {
+			getCampus();
+		}
+	}, [campus]);
+
+	return (
+		<HomeStack.Navigator>
+			<HomeStack.Screen
+				name='Home'
+				component={HomeScreen}
+				options={{
+					headerRight: () => (
+						<TouchableOpacity
+							onPress={() => alert('This is a button!')}>
+							<Image
+								source={{
+									uri:
+										pcoData.userInfo.data.attributes.avatar,
+								}}
+								style={{
+									width: 40,
+									height: 40,
+									borderRadius: 100,
+									marginHorizontal: 20,
+								}}
+							/>
+						</TouchableOpacity>
+					),
+				}}
+			/>
+		</HomeStack.Navigator>
+	);
+}
 
 const styles = StyleSheet.create({
 	container: {

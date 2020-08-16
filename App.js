@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { View, Button, Group } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { Ionicons } from '@expo/vector-icons';
 
 import { scopes } from './pco';
 import LoginScreen from './screens/LoginScreen';
-import HomeScreen from './screens/HomeScreen';
-import GiveScreen from './screens/GiveScreen';
-import GroupsScreen from './screens/GroupsScreen';
-import CheckinScreen from './screens/CheckinScreen';
-import EventsScreen from './screens/EventsScreen';
+import HomeStackScreen from './screens/HomeScreen';
+import GiveStackScreen from './screens/GiveScreen';
+import GroupsStackScreen from './screens/GroupsScreen';
+import CheckinStackScreen from './screens/CheckinScreen';
+import EventsStackScreen from './screens/EventsScreen';
 
 import UserInfoContext from './context/UserInfoContext';
 
@@ -26,7 +28,6 @@ import {
 } from '@env';
 
 const redirectUrl = AuthSession.getRedirectUrl();
-const Stack = createStackNavigator();
 
 export default function App() {
 	const [code, setCode] = useState(null);
@@ -161,34 +162,32 @@ export default function App() {
 						}}>
 						<Tab.Screen
 							name='Home'
-							component={HomeScreen}
+							component={HomeStackScreen}
 							options={{ title: 'Home' }}
 						/>
 						<Tab.Screen
 							name='Give'
-							component={GiveScreen}
+							component={GiveStackScreen}
 							options={{ title: 'Give' }}
 						/>
 						<Tab.Screen
 							name='Groups'
-							component={GroupsScreen}
+							component={GroupsStackScreen}
 							options={{ title: 'Groups' }}
 						/>
 						<Tab.Screen
 							name='Check-In'
-							component={CheckinScreen}
+							component={CheckinStackScreen}
 							options={{ title: 'Check-In' }}
 						/>
 						<Tab.Screen
 							name='Events'
-							component={EventsScreen}
+							component={EventsStackScreen}
 							options={{ title: 'Events' }}
 						/>
 					</Tab.Navigator>
 				) : (
-					<Stack.Navigator>
-						<Stack.Screen name='Login' component={LoginScreen} />
-					</Stack.Navigator>
+					<LoginScreen />
 				)}
 			</NavigationContainer>
 		</UserInfoContext.Provider>

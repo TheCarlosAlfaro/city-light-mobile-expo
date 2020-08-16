@@ -1,19 +1,26 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const GiveScreen = () => {
+const GiveStack = createStackNavigator();
+
+const CheckinScreen = () => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					This is supposed to be the Give Screen
-				</Text>
+				<Text style={styles.placeHolder}>Give Screen</Text>
 			</View>
 		</View>
 	);
 };
 
-export default GiveScreen;
+export default function GiveStackScreen() {
+	return (
+		<GiveStack.Navigator>
+			<GiveStack.Screen name='Give' component={CheckinScreen} />
+		</GiveStack.Navigator>
+	);
+}
 
 const styles = StyleSheet.create({
 	container: {

@@ -1,19 +1,26 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const EventsScreen = () => {
+const EventsStack = createStackNavigator();
+
+const CheckinScreen = () => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					This is supposed to be the EVENTS Screen
-				</Text>
+				<Text style={styles.placeHolder}>Events Screen</Text>
 			</View>
 		</View>
 	);
 };
 
-export default EventsScreen;
+export default function EventsStackScreen() {
+	return (
+		<EventsStack.Navigator>
+			<EventsStack.Screen name='Events' component={CheckinScreen} />
+		</EventsStack.Navigator>
+	);
+}
 
 const styles = StyleSheet.create({
 	container: {
