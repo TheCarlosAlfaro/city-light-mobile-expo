@@ -160,23 +160,6 @@ const HomeScreen = () => {
 
 export default function HomeStackScreen() {
 	const pcoData = useContext(UserInfoContext);
-	const [campus, setCampus] = useState(null);
-
-	useEffect(() => {
-		const getCampus = async () => {
-			const response = await axios.get(`${API_GENERAL}campuses`, {
-				headers: {
-					authorization: `Bearer ${pcoData.accessToken}`,
-				},
-			});
-
-			setCampus(response.data.data[0].attributes);
-		};
-
-		if (!campus) {
-			getCampus();
-		}
-	}, [campus]);
 
 	return (
 		<HomeStack.Navigator
