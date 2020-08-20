@@ -1,28 +1,38 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { ScrollView } from 'react-native-gesture-handler';
+import Constants from 'expo-constants';
 
-const GiveStack = createStackNavigator();
+const GroupScreen = ({ route, navigation }) => {
+	const { groupData, pcoData } = route.params;
 
-const CheckinScreen = () => {
 	return (
-		<View style={styles.container}>
-			<View style={styles.userInfo}>
-				<Text style={styles.placeHolder}>
-					When clicking a group should take me here
-				</Text>
+		<ScrollView style={styles.scrollView}>
+			<View style={styles.header}>
+				<Image
+					source={{
+						uri: groupData.attributes.header_image.medium,
+					}}
+					style={{
+						width: 200,
+						height: 200,
+						borderRadius: 100,
+						marginVertical: 10,
+					}}
+				/>
 			</View>
-		</View>
+			<View style={styles.container}>
+				<View style={styles.userInfo}>
+					<Text>Group Name: {groupData.attributes.name}</Text>
+					{console.log(groupData)}
+				</View>
+			</View>
+		</ScrollView>
 	);
 };
 
-export default function GiveStackScreen() {
-	return (
-		<GiveStack.Navigator>
-			<GiveStack.Screen name='Give' component={CheckinScreen} />
-		</GiveStack.Navigator>
-	);
-}
+export default GroupScreen;
 
 const styles = StyleSheet.create({
 	container: {
@@ -31,6 +41,18 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	scrollView: {
+		backgroundColor: '#fff',
+		marginHorizontal: 10,
+	},
+	header: {
+		flex: 1,
+		justifyContent: 'center',
+		backgroundColor: '#fff',
+		alignItems: 'center',
+		resizeMode: 'contain',
+		paddingBottom: Constants.statusBarHeight,
 	},
 
 	userInfo: {

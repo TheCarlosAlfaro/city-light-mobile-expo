@@ -80,7 +80,10 @@ const GroupsScreen = ({ navigation }) => {
 										<TouchableOpacity
 											style={styles.button}
 											onPress={() =>
-												navigation.navigate('Group')
+												navigation.navigate('Group', {
+													groupData: group,
+													pcoData,
+												})
 											}>
 											<Image
 												source={{
