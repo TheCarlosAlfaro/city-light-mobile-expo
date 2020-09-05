@@ -9,6 +9,7 @@ export default LoginScreen = () => {
 				style={styles.logo}
 				source={require('../assets/logo_black.png')}
 			/>
+			<Text style={styles.userInfoText}>Welcome!</Text>
 			<TouchableOpacity
 				style={styles.button}
 				onPress={handlePCOLogin}
@@ -23,9 +24,7 @@ export default LoginScreen = () => {
 const styles = StyleSheet.create({
 	logo: {
 		maxWidth: 400,
-		height: 300,
-		marginTop: -100,
-		// marginBottom: 20,
+		height: 200,
 	},
 	container: {
 		flexDirection: 'column',
@@ -51,6 +50,8 @@ const styles = StyleSheet.create({
 	userInfoText: {
 		color: '#000',
 		fontSize: 18,
+		fontWeight: 'bold',
+		marginVertical: 30,
 	},
 	errorText: {
 		color: '#000',

@@ -35,11 +35,23 @@ export default function App() {
 	const [userInfo, setUserInfo] = useState(null);
 	const [churchInfo, setChurchInfo] = useState(null);
 	const [didError, setError] = useState(false);
+	const [campus, setCampus] = useState(null);
 
 	const pcoData = {
 		userInfo,
 		churchInfo,
 		accessToken,
+		campus,
+	};
+
+	handlePCOLogin = async () => {
+		let results = await AuthSession.startAsync({
+			authUrl: `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${redirectUrl}&response_type=code&scope=${scopes.join(
+				'%20'
+			)}`,
+		});
+
+		setCode(results.params.code);
 	};
 
 	useEffect(() => {
@@ -82,8 +94,23 @@ export default function App() {
 					});
 
 					setChurchInfo(generalInfo.data);
-				};
+					const getCampus = async () => {
+						const response = await axios.get(
+							`${API_GENERAL}campuses`,
+							{
+								headers: {
+									authorization: `Bearer ${pcoData.accessToken}`,
+								},
+							}
+						);
 
+						setCampus(response.data.data[0].attributes);
+					};
+
+					if (!campus) {
+						getCampus();
+					}
+				};
 				if (!userInfo) {
 					handleGetData();
 				}
@@ -97,17 +124,8 @@ export default function App() {
 		churchInfo,
 		setUserInfo,
 		pcoData,
+		campus,
 	]);
-
-	handlePCOLogin = async () => {
-		let results = await AuthSession.startAsync({
-			authUrl: `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${redirectUrl}&response_type=code&scope=${scopes.join(
-				'%20'
-			)}`,
-		});
-
-		setCode(results.params.code);
-	};
 
 	handlePCOLogout = () => {
 		setCode(null);

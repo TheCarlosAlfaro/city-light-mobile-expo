@@ -16,7 +16,10 @@ import HTML from 'react-native-render-html';
 
 const GroupScreen = ({ route, navigation }) => {
 	const { groupData, pcoData } = route.params;
+	console.log('Church Info', pcoData.churchInfo);
 	const [group, setGroup] = useState(null);
+	const [groupType, setGroupType] = useState(null);
+	const [groupsTags, setGroupsTags] = useState(null);
 	useEffect(() => {
 		const getGroup = async () => {
 			const response = await axios.get(
@@ -34,11 +37,43 @@ const GroupScreen = ({ route, navigation }) => {
 		if (!group) {
 			getGroup();
 		}
-	}, [group]);
+
+		const getGroupType = async (id) => {
+			const typeResponse = await axios.get(
+				`${API_GROUPS}group_types/${id}`,
+				{
+					headers: {
+						authorization: `Bearer ${pcoData.accessToken}`,
+					},
+				}
+			);
+
+			setGroupType(typeResponse.data.data);
+		};
+
+		if (group && !groupType) {
+			getGroupType(groupData.relationships.group_type.data.id);
+		}
+
+		const getGroupsTags = async () => {
+			console.log(`${API_GROUPS}tag_groups`);
+			const tagResponse = await axios.get(`${API_GROUPS}tag_groups`, {
+				headers: {
+					authorization: `Bearer ${pcoData.accessToken}`,
+				},
+			});
+
+			setGroupsTags(tagResponse.data.data);
+		};
+
+		if (!groupsTags) {
+			getGroupsTags();
+		}
+	}, [group, groupType, groupsTags]);
 
 	return (
 		<SafeAreaView style={styles.container}>
-			{group && (
+			{group && groupType && (
 				<ScrollView style={styles.scrollView}>
 					<View style={styles.header}>
 						<Image
@@ -56,6 +91,10 @@ const GroupScreen = ({ route, navigation }) => {
 					<View style={styles.container}>
 						<Text style={styles.title}>
 							{groupData.attributes.name}
+						</Text>
+						<Text style={styles.subTitle}>
+							{groupType.attributes.name}
+							{console.log(groupType)}
 						</Text>
 						<View style={styles.userInfo}>
 							{group.attributes.description && (
@@ -107,7 +146,10 @@ const styles = StyleSheet.create({
 	title: {
 		fontWeight: 'bold',
 		fontSize: 18,
-		marginVertical: 10,
+	},
+	subTitle: {
+		fontWeight: 'bold',
+		fontSize: 14,
 	},
 	sectionTitle: {
 		fontWeight: 'bold',

@@ -38,24 +38,8 @@ class Anchor extends React.Component {
 }
 
 const HomeScreen = () => {
-	const pcoData = useContext(UserInfoContext);
-	const [campus, setCampus] = useState(null);
-
-	useEffect(() => {
-		const getCampus = async () => {
-			const response = await axios.get(`${API_GENERAL}campuses`, {
-				headers: {
-					authorization: `Bearer ${pcoData.accessToken}`,
-				},
-			});
-
-			setCampus(response.data.data[0].attributes);
-		};
-
-		if (!campus) {
-			getCampus();
-		}
-	}, [campus]);
+	const { churchInfo, campus, userInfo } = useContext(UserInfoContext);
+	// console.log(campus);
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -63,7 +47,7 @@ const HomeScreen = () => {
 				<View style={styles.header}>
 					<Image
 						source={{
-							uri: pcoData.churchInfo.data.attributes.avatar_url,
+							uri: churchInfo.data.attributes.avatar_url,
 						}}
 						style={{ width: 200, height: 100 }}
 					/>
@@ -72,7 +56,7 @@ const HomeScreen = () => {
 					<View>
 						<Text style={styles.campus}>{campus.name}</Text>
 						<Text style={styles.welcomeMessage}>
-							Welcome {pcoData.userInfo.data.attributes.name}!
+							Welcome {userInfo.data.attributes.name}!
 						</Text>
 						<View style={styles.contactInfo}>
 							<View style={styles.contactItem}>
@@ -108,7 +92,7 @@ const HomeScreen = () => {
 								<Anchor
 									style={styles.contactLink}
 									href={
-										pcoData.churchInfo.data.attributes
+										churchInfo.data.attributes
 											.contact_website
 									}>
 									Website
@@ -127,26 +111,27 @@ const HomeScreen = () => {
 							<Button title='Directions'></Button>
 						</View>
 						<MapView
+							// provider='google'
+							zoomEnabled={false}
+							// onPress={(e) => console.log('map', e.nativeEvent}
+							scrollEnabled={false}
 							style={styles.mapStyle}
 							initialRegion={{
-								latitude: 36.0544542,
-								longitude: -115.2825083,
+								latitude: parseFloat(campus.latitude),
+								longitude: parseFloat(campus.longitude),
 								latitudeDelta: 0.02,
 								longitudeDelta: 0.02,
 							}}>
 							<Marker
 								coordinate={{
-									latitude: 36.0544542,
-									longitude: -115.2825083,
+									latitude: parseFloat(campus.latitude),
+									longitude: parseFloat(campus.longitude),
 								}}
 							/>
 						</MapView>
 						<Anchor
 							style={styles.address}
-							href={
-								pcoData.churchInfo.data.attributes
-									.contact_website
-							}>
+							href={churchInfo.data.attributes.contact_website}>
 							{`${campus.street}${'\n'}`}
 
 							{`${campus.city}, ${campus.state} ${campus.zip}`}
